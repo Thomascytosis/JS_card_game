@@ -20,10 +20,10 @@ Gotta make it look good. But this is low priority until near completion. There m
 
 ## Credit to JosephSeraph: https://opengameart.org/users/josephseraph
 
-### Patreon- https://www.patreon.com/JosephSeraph
+- [Patreon](https://www.patreon.com/JosephSeraph)
 
-## Thanks to Slipyx for repost: https://opengameart.org/content/700-rpg-icons
+## Thankyou to Slipyx for repost of Lorc: https://opengameart.org/content/700-rpg-icons
 
 ## Credit to Lorc: https://www.reddit.com/user/Lorc
 
-https://www.reddit.com/r/IndieGaming/comments/ifmie/i_made_700_rpg_icons_free_for_use_for_your_game/
+-[original Reddit post](https://www.reddit.com/r/IndieGaming/comments/ifmie/i_made_700_rpg_icons_free_for_use_for_your_game/)

@@ -34,24 +34,24 @@ function create_encounter_deck() {
     "boss",
   ];
   for (let index = 0; index < list_of_encounters.length; index++) {
-    let singleItem = {};
-    singleItem["id"] = index + 1;
-    singleItem["name"] = list_of_encounters[index];
-    singleItem["type"] = list_of_encounters[index];
-    if (singleItem["type"] == "enemy") {
-      singleItem["power"] = 1;
-      singleItem["health"] = 10;
-      singleItem["image"] = "./enemy.png";
-    } else if (singleItem["type"] == "elite") {
-      singleItem["power"] = 2;
-      singleItem["health"] = 20;
-      singleItem["image"] = "./elite.png";
-    } else if (singleItem["type"] == "boss") {
-      singleItem["power"] = 3;
-      singleItem["health"] = 30;
-      singleItem["image"] = "./boss.png";
+    let encounter = {};
+    encounter["id"] = index + 1;
+    encounter["name"] = list_of_encounters[index];
+    encounter["type"] = list_of_encounters[index];
+    if (encounter["type"] == "enemy") {
+      encounter["power"] = 1;
+      encounter["health"] = 10;
+      encounter["image"] = "./enemy.png";
+    } else if (encounter["type"] == "elite") {
+      encounter["power"] = 2;
+      encounter["health"] = 20;
+      encounter["image"] = "./elite.png";
+    } else if (encounter["type"] == "boss") {
+      encounter["power"] = 3;
+      encounter["health"] = 30;
+      encounter["image"] = "./boss.png";
     }
-    encounter_deck.push(singleItem);
+    encounter_deck.push(encounter);
   }
   document.getElementById(
     "encounter_deck_count"
@@ -171,17 +171,19 @@ function clear_encounter(encounter) {
 /* -----create starting deck -----*/
 function create_starting_deck() {
   let list_of_elements = ["Fire", "Ice", "Lightning", "Wind", "Earth", "Water"];
+  let utility_types = ["draw", "discard", "heal"];
   for (let index = 0; index < list_of_elements.length; index++) {
-    var singleItem = {};
-    singleItem["id"] = index + 1;
-    singleItem["name"] = list_of_elements[index];
-    singleItem["rarity"] = "common";
-    singleItem["power"] = 1;
-    singleItem["damage"] = 1;
-    singleItem["defense"] = 1;
-    singleItem["utility"] = [];
+    let random_utility = Math.floor(Math.random() * utility_types.length - 1);
+    let card = {};
+    card["id"] = index + 1;
+    card["name"] = list_of_elements[index];
+    card["rarity"] = "common";
+    card["power"] = 1;
+    card["damage"] = 1;
+    card["defense"] = 1;
+    card["utility"] = [utility_types[random_utility]];
     for (let index = 0; index < 3; index++) {
-      starting_deck.push(singleItem);
+      starting_deck.push(card);
     }
   }
   shuffleArray(starting_deck);
@@ -227,7 +229,11 @@ function draw(num) {
     });
     for (let index = 0; index < num; index++) {
       let card = draw_cards[index];
-      document.getElementById(`in_hand_${index}`).innerHTML = `${card.name}`;
+      let id = `in_hand_${index}`;
+      document.getElementById(id).innerHTML = `${card.name}`;
+      let action_type = check_active_type(card);
+      let action_image = `${action_type}.png`;
+      create_image(action_image, "card_image", card.name + "_card_image", id);
     }
     draw_cards.forEach((card) => {
       hand.push(card);
@@ -237,7 +243,11 @@ function draw(num) {
     let draw_cards = player_deck.splice(0, num);
     for (let index = 0; index < num; index++) {
       let card = draw_cards[index];
-      document.getElementById(`in_hand_${index}`).innerHTML = `${card.name}`;
+      let id = `in_hand_${index}`;
+      document.getElementById(id).innerHTML = `${card.name}`;
+      let action_type = check_active_type(card);
+      let action_image = `${action_type}.png`;
+      create_image(action_image, "card_image", card.name + "_card_image", id);
     }
     draw_cards.forEach((card) => {
       hand.push(card);
@@ -247,6 +257,34 @@ function draw(num) {
   }
 }
 /* -----End draw cards ----- */
+/* ------ check active card type ------ */
+function check_active_type(card) {
+  let active = document.getElementsByClassName("action_button active");
+  let active_type = "";
+  if (!!active[0]) {
+    var active_id = active[0].id;
+  }
+  if (active_id == "attack_button") {
+    console.log("check_active_type: IF: !active type is Attack!");
+    active_type = "Attack";
+    return active_type;
+  } else if (active_id == "defense_button") {
+    console.log("check_active_type: IF: ELSEIF: !active type is Defense!");
+    active_type = "Defense";
+    return active_type;
+  } else if (active_id == "utility_button") {
+    console.log("check_active_type: IF: ELSEIF2: !active type is Utility!");
+    active_type = "Utility";
+    return active_type;
+  } else {
+    console.log(
+      "check_active_type: IF: ELSE: !No active button will default to attack type!"
+    );
+    active_type = "Attack";
+    return active_type;
+  }
+}
+/* ------ End check active card type ------ */
 /* -----discard ----- */
 function discard(card) {
   if (card.name != "") {
@@ -460,8 +498,22 @@ function set_active(target) {
   }
   let set_active = document.getElementById(target);
   set_active.classList.toggle("active");
+  hand_action_type();
 }
 /* -----End set active class to button ----- */
+/* -----change action type of cards in hand ------ */
+function hand_action_type() {
+  let image = document.getElementsByClassName("card_image");
+  for (let i = 0; i < image.length; i++) {
+    if (!!image) {
+      let active = check_active_type();
+      let new_source = active + ".png";
+      image[i].children[0].src = new_source;
+    }
+  }
+  return;
+}
+/* -----END change action type of cards in hand ------ */
 /* ------ TEST ------ */
 function test() {
   console.log("test: place code to test within");
