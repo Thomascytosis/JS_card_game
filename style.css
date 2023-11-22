@@ -419,6 +419,16 @@ body {
   transition: opacity 0.5s;
 }
 /* ------End popup window ------ */
+/* ------add card reward ------ */
+#add_card_container {
+  position: absolute;
+  display: inline-flex;
+  top: 10%;
+  left: 5%;
+  width: 95%;
+  height: 80%;
+}
+/* ------End add card reward ------ */
 /* ----------------------------- */
 /* The Modal (background) */
 /* .modal {
