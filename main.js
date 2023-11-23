@@ -645,8 +645,12 @@ document.onmousedown = function (e) {
   target_class = e.target.className;
   target_name = e.target.innerHTML;
   target_id = e.target.id;
-  if (target_class == "in_hand_card") {
-    play_card(target_name, target_id);
+  if (
+    target_class == "in_hand_card" ||
+    target_class == "in_hand_card highlight"
+  ) {
+    highlight(target_name, target_id);
+    // play_card(target_name, target_id);
   } else if (
     target_class == "action_button" ||
     target_class == "action_button active"
@@ -659,6 +663,38 @@ document.onmousedown = function (e) {
   }
 };
 /*-----End mouse click and tag console log -----*/
+/* ------highlight card ------ */
+function highlight(name, id) {
+  let selected = document.getElementById(id).classList;
+  if (selected.contains("highlight")) {
+    document.getElementById(id).classList.remove("highlight");
+    play_card_button(name, id);
+  } else {
+    document.getElementById(id).classList.add("highlight");
+    play_card_button(name, id);
+  }
+}
+/* ------End highlight card ------ */
+/* ------ play highlighted card button------- */
+function play_card_button(name, id) {
+  let hand = document.getElementById(id).parentElement.id;
+  let card = document
+    .getElementById(id)
+    .getElementsByClassName("button play_card");
+  if (hand && card.length > 0) {
+    card[0].remove();
+  } else if (hand) {
+    let btn = document.createElement("button");
+    btn.setAttribute("class", "button play_card");
+    btn.setAttribute("type", "button");
+    btn.addEventListener("click", play_card(name, id));
+    btn.innerText = "Play Card";
+    document.getElementById(id).appendChild(btn);
+  } else {
+    return;
+  }
+}
+/* ------END play highlighted card button------- */
 /* -----set active class to button ----- */
 function set_active(target) {
   let other_buttons = document.getElementsByClassName("action_button active");

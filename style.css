@@ -318,6 +318,25 @@ body {
   background-color: rgba(255, 255, 255, 0.263);
   cursor: pointer;
 }
+.in_hand_card.highlight {
+  background-color: teal;
+  border-color: fuchsia;
+  border-width: 5px;
+  border-style: solid;
+  box-shadow: 0px 0px 10px rgba(0, 255, 255), 0px 0px 10px rgba(0, 255, 255);
+}
+.button.play_card {
+  position: absolute;
+  bottom: 0%;
+  color: antiquewhite;
+  background-color: teal;
+  border-color: fuchsia;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 3px;
+  cursor: pointer;
+}
 /* ---------- End player hand ---------- */
 /* ---------- player and enemy stats and conditions ---------- */
 #stats_conditions_container {
