@@ -196,8 +196,14 @@ function create_starting_deck() {
     card["damage"] = 1;
     card["defense"] = 1;
     card["utility"] = [utility_types[random_utility]];
-    for (let index = 0; index < 3; index++) {
-      starting_deck.push(card);
+    for (var key in card) {
+      if (!card[key]) {
+        index -= 1;
+      } else {
+        for (let index = 0; index < 3; index++) {
+          starting_deck.push(card);
+        }
+      }
     }
   }
   shuffleArray(starting_deck);
@@ -300,13 +306,22 @@ function check_active_type(card) {
 }
 /* ------ End check active card type ------ */
 /* -----discard ----- */
-function discard(card) {
-  if (card.name != "") {
-    card.forEach((x) => {
-      discard_pile.push(x);
-    });
+function discard(discarded) {
+  console.log(discarded.length);
+  if (discarded.length > 1) {
+    let multi_discard;
+    for (let i = 0; i < discarded.length; i++) {
+      console.log(discarded[i]["name"]);
+      console.log(hand);
+      for (let index = 0; index <= hand.length; index++) {
+        if (hand[index]["name"] == discarded[i]["name"]) {
+          multi_discard = hand.splice(index, 1);
+          discard_pile.push(multi_discard);
+        }
+      }
+    }
   } else {
-    console.log("discard: ELSE: !! not a card. how to discard? !!");
+    discard_pile.push(discarded);
   }
   update_discard_pile_count();
 }
@@ -331,49 +346,56 @@ function action_points(num) {
 /*----- End action points ----- */
 /* -----play card -----*/
 function play_card(name, id) {
-  if (actions <= 0) {
-    console.log("play_card: IF: out of actions!");
-    return;
-  }
-  let card_index;
-  hand.forEach((card) => {
-    if (hand["name"] == name) {
-      card_index = hand.indexOf(card["name"]);
-    }
-  });
-  let card_played = hand.splice(card_index, 1);
-  if (current_encounter[0] && current_encounter[0]["type"] != "event") {
-    let card_type = check_active_type();
-    if (card_type == "Attack") {
-      let target_health = damage(
-        "health_stat_text",
-        current_encounter[0]["health"],
-        card_played[0]["power"]
-      );
-      current_encounter[0]["health"] = target_health;
-    } else if (card_type == "Defense") {
-      defense("player", card_played[0]["defense"]);
-    } else if (card_type == "Utility") {
-      /* code for utility */
+  console.log(hand.length);
+  if (hand.length > 0) {
+    if (actions <= 0) {
+      console.log("play_card: IF: out of actions!");
       return;
     }
-    action_points(-1);
-    document.getElementById(id).innerText = "!! CARD PLAYED !!";
-    discard(card_played);
-  }
-  if (current_encounter[0] && current_encounter[0]["health"] <= 0) {
-    console.log(
-      "play_card: IF2: Nest: Nest: IF: !enemy defeated! time for rewards!"
-    );
-    rewards(current_encounter[0]["type"]);
-    clear_encounter(current_encounter[0]);
-  }
-  if (actions <= 0) {
-    console.log("play_card: IF2: Nest: IF2: out of actions!");
-    end_turn_button();
-  } else {
-    console.log("play_card: IF2: ELSE: no target");
-    return;
+    let card_index;
+    hand.forEach((card) => {
+      if (hand["name"] == name) {
+        card_index = hand.indexOf(card["name"]);
+      }
+    });
+    let card_played = hand.splice(card_index, 1);
+    let card_power = card_played[0]["power"];
+    if (current_encounter[0] && current_encounter[0]["type"] != "event") {
+      let card_type = check_active_type();
+      if (
+        card_type == "Attack" &&
+        document.getElementById(id).innerText != "!! CARD PLAYED !!"
+      ) {
+        let target_health = damage(
+          "health_stat_text",
+          current_encounter[0]["health"],
+          card_power
+        );
+        current_encounter[0]["health"] = target_health;
+      } else if (card_type == "Defense") {
+        defense("player", card_played[0]["defense"]);
+      } else if (card_type == "Utility") {
+        /*!!!!!!!!! add code for utility !!!!!!!!!!!*/
+        console.log("!!!!!!NEED TO ADD UTILITY CODE!!!!");
+        return;
+      }
+      document.getElementById(id).innerText = "!! CARD PLAYED !!";
+      discard(card_played);
+    }
+    if (current_encounter[0] && current_encounter[0]["health"] <= 0) {
+      console.log(
+        "play_card: IF2: Nest: Nest: IF: !enemy defeated! time for rewards!"
+      );
+      rewards(current_encounter[0]["type"]);
+      clear_encounter(current_encounter[0]);
+    }
+    if (actions <= 0) {
+      console.log("play_card: IF2: Nest: IF2: out of actions!");
+      end_turn_button();
+    } else {
+      console.log("play_card: IF2: ELSE: ");
+      return;
+    }
   }
 }
 /* ------END play card------- */
@@ -383,6 +405,7 @@ function damage(target_id, target_health, amount) {
   let remaining_health = target_health - damage;
   target_health = remaining_health;
   document.getElementById(target_id).innerText = ": " + target_health;
+  action_points(-1);
   return target_health;
 }
 /* ------End damage to enemy ------ */
@@ -397,6 +420,7 @@ function defense(target, amount) {
   } else if (player_defense > 1) {
     document.getElementById("player_defense_text").innerText =
       ": " + player_defense;
+    action_points(-1);
   } else {
     create_image(
       "./defense.png",
@@ -406,6 +430,7 @@ function defense(target, amount) {
     );
     document.getElementById("player_defense_text").innerText =
       ": " + player_defense;
+    action_points(-1);
   }
   if (player_defense <= 0) {
     player_defense = 0;
@@ -555,12 +580,18 @@ function add_card_reward(select_quantity, from_amount) {
     new_card["damage"] = 1;
     new_card["defense"] = 1;
     new_card["utility"] = [utility_types[random_utility]];
-    cards.push(new_card);
-    let card = document.createElement("div");
-    card.setAttribute("class", "in_hand_card");
-    card.setAttribute("id", new_card["name"]);
-    card.innerHTML = new_card["name"];
-    div2.appendChild(card);
+    // logic to get rid of undefined returns - probably due to a delay in generating new card
+    if (!new_card["name"]) {
+      i -= 1;
+    } else {
+      cards.push(new_card);
+      let card = document.createElement("div");
+      card.setAttribute("class", "in_hand_card");
+      card.setAttribute("id", new_card["name"]);
+      card.innerHTML = new_card["name"];
+      console.log(new_card["name"]);
+      div2.appendChild(card);
+    }
   }
   //add to page
   document.getElementById("backdrop").appendChild(div);
