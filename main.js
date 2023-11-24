@@ -6,7 +6,6 @@ function start_Window() {
 start_Window();
 
 const game_start = () => {
-  console.log("game_start: start button has been clicked");
   document.getElementById("start_window").style.opacity = 0;
   setTimeout(() => {
     document
@@ -193,21 +192,26 @@ function create_starting_deck() {
     card["name"] = list_of_elements[index];
     card["rarity"] = "common";
     card["power"] = 1;
-    card["damage"] = 1;
     card["defense"] = 1;
-    card["utility"] = [utility_types[random_utility]];
+    card["utility"] = utility_types[random_utility];
     for (var key in card) {
-      if (!card[key]) {
+      if (card[key] == undefined) {
+        let trash = [];
         index -= 1;
-      } else {
-        for (let index = 0; index < 3; index++) {
-          starting_deck.push(card);
-        }
+        trash.push(card);
+        card = false;
+        // console.log(trash);
       }
+    }
+    if (card) {
+      starting_deck.push(card);
+      starting_deck.push(card);
+      starting_deck.push(card);
     }
   }
   shuffleArray(starting_deck);
   player_deck = starting_deck;
+  // console.log(player_deck);
 }
 create_starting_deck();
 /* -----End create starting deck -----*/
@@ -285,15 +289,15 @@ function check_active_type(card) {
     var active_id = active[0].id;
   }
   if (active_id == "attack_button") {
-    console.log("check_active_type: IF: !active type is Attack!");
+    // console.log("check_active_type: IF: !active type is Attack!");
     active_type = "Attack";
     return active_type;
   } else if (active_id == "defense_button") {
-    console.log("check_active_type: IF: ELSEIF: !active type is Defense!");
+    // console.log("check_active_type: IF: ELSEIF: !active type is Defense!");
     active_type = "Defense";
     return active_type;
   } else if (active_id == "utility_button") {
-    console.log("check_active_type: IF: ELSEIF2: !active type is Utility!");
+    // console.log("check_active_type: IF: ELSEIF2: !active type is Utility!");
     active_type = "Utility";
     return active_type;
   } else {
@@ -307,19 +311,20 @@ function check_active_type(card) {
 /* ------ End check active card type ------ */
 /* -----discard ----- */
 function discard(discarded) {
-  console.log(discarded.length);
-  if (discarded.length > 1) {
-    let multi_discard;
-    for (let i = 0; i < discarded.length; i++) {
-      console.log(discarded[i]["name"]);
-      console.log(hand);
-      for (let index = 0; index <= hand.length; index++) {
-        if (hand[index]["name"] == discarded[i]["name"]) {
-          multi_discard = hand.splice(index, 1);
-          discard_pile.push(multi_discard);
+  let cards = discarded.length;
+  let card_index;
+  if (cards > 1) {
+    let multi_discard = [];
+    for (let i = 0; i < cards; i++) {
+      hand.forEach((card) => {
+        if (hand["name"] == discarded[0]["name"]) {
+          card_index = hand.indexOf(card["name"]);
         }
-      }
+      });
+      multi_discard = hand.splice(card_index, 1);
+      discard_pile.push(multi_discard);
     }
+    multi_discard = [];
   } else {
     discard_pile.push(discarded);
   }
@@ -346,7 +351,6 @@ function action_points(num) {
 /*----- End action points ----- */
 /* -----play card -----*/
 function play_card(name, id) {
-  console.log(hand.length);
   if (hand.length > 0) {
     if (actions <= 0) {
       console.log("play_card: IF: out of actions!");
@@ -411,7 +415,6 @@ function damage(target_id, target_health, amount) {
 /* ------End damage to enemy ------ */
 /* -----player defense ----- */
 function defense(target, amount) {
-  // console.log(amount);
   player_defense += amount;
   let clear_player_defense = document.getElementById("player_defense");
   if (player_defense < 0) {
@@ -589,7 +592,7 @@ function add_card_reward(select_quantity, from_amount) {
       card.setAttribute("class", "in_hand_card");
       card.setAttribute("id", new_card["name"]);
       card.innerHTML = new_card["name"];
-      console.log(new_card["name"]);
+      // console.log(new_card["name"]);
       div2.appendChild(card);
     }
   }
@@ -601,7 +604,7 @@ function add_card_reward(select_quantity, from_amount) {
 }
 /* -----End card to player deck ------ */
 function close() {
-  console.log("close button clicked");
+  // console.log("close button clicked");
   let modal = document.getElementById("add_card_modal");
   modal.remove();
 }
@@ -634,9 +637,12 @@ function fade(element_id) {
     }, 1);
   } else {
     document.getElementById(element_id).style.opacity = 0;
-    setTimeout(() => {
-      document.getElementById(element_id).remove();
-    }, 1000);
+    let window = document.getElementById(element_id);
+    if (window) {
+      setTimeout(() => {
+        document.getElementById(element_id).remove();
+      }, 1000);
+    }
   }
 }
 /* -----End fade in/out popup window ----- */
@@ -668,33 +674,45 @@ function highlight(name, id) {
   let selected = document.getElementById(id).classList;
   if (selected.contains("highlight")) {
     document.getElementById(id).classList.remove("highlight");
-    play_card_button(name, id);
+    toggle_play_card_button();
   } else {
     document.getElementById(id).classList.add("highlight");
-    play_card_button(name, id);
+    toggle_play_card_button();
   }
 }
 /* ------End highlight card ------ */
 /* ------ play highlighted card button------- */
-function play_card_button(name, id) {
-  let hand = document.getElementById(id).parentElement.id;
-  let card = document
-    .getElementById(id)
-    .getElementsByClassName("button play_card");
-  if (hand && card.length > 0) {
-    card[0].remove();
-  } else if (hand) {
+function toggle_play_card_button() {
+  let check_highlight = document.getElementsByClassName("highlight");
+  let check_button = document.getElementById("play_card_button");
+  if (check_highlight.length == 1 && !check_button) {
     let btn = document.createElement("button");
-    btn.setAttribute("class", "button play_card");
+    btn.setAttribute("id", "play_card_button");
     btn.setAttribute("type", "button");
-    btn.addEventListener("click", play_card(name, id));
+    btn.onclick = play_cards_button;
     btn.innerText = "Play Card";
-    document.getElementById(id).appendChild(btn);
-  } else {
-    return;
+    document.getElementById("player_hand").appendChild(btn);
+  } else if (check_highlight.length > 1) {
+  } else if (check_button && check_highlight.length < 1) {
+    document.getElementById("play_card_button").remove();
   }
 }
 /* ------END play highlighted card button------- */
+/* -----play_cards_button----- */
+function play_cards_button() {
+  let highlighted_cards = document.getElementsByClassName("highlight");
+  for (let card = 0; card < highlighted_cards.length; card++) {
+    let card_id = highlighted_cards[card]["id"];
+    let card_name = highlighted_cards[card]["innerText"];
+    if (!!card_name || !!card_id) {
+      card -= 1;
+    }
+    play_card(card_name, card_id);
+    document.getElementById(card_id).classList.remove("highlight");
+  }
+  document.getElementById("play_card_button").remove();
+}
+/* -----End play_cards_button----- */
 /* -----set active class to button ----- */
 function set_active(target) {
   let other_buttons = document.getElementsByClassName("action_button active");
