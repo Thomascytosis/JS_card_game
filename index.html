@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- do i need jquery? -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
     <link rel="stylesheet" href="style.css" />
     <title>Elementalist</title>
   </head>
@@ -22,12 +23,7 @@
               text testing the space testing the space testing the space testing
               the space testing the space testing the space
             </p>
-            <button
-              onclick="game_start()"
-              id="start_button"
-              class="blink_me"
-              type="button"
-            >
+            <button id="start_button" class="blink_me" type="button">
               Start
             </button>
           </div>
@@ -43,19 +39,15 @@
           deck container
           <div id="encounter_deck" class="main_section">
             <p id="encounter_deck_count">Encounter Deck</p>
-            <button
-              onclick="draw_encounter()"
-              id="encounter_button"
-              type="button"
-            >
+            <!-- temp button for testing -->
+            <button id="encounter_button" type="button">
+              <!--End temp button for testing -->
               Encounter
             </button>
           </div>
           <div id="player_deck" class="main_section">
             <p id="player_deck_count">Player Deck</p>
-            <button onclick="draw(5);" id="draw_button" type="button">
-              Draw
-            </button>
+            <button id="draw_button" type="button">Draw</button>
           </div>
         </div>
         <!-- end player and encounter deck container -->
@@ -76,11 +68,13 @@
             Utility
           </button>
           <div id="actions_container">
-            Actions [ <span id="actions">3</span> ]
+            Actions [ <span id="actions"></span> ]
           </div>
+          <!-- REMINDER TO REMOVE TEST BUTTON -->
           <button onclick="test()" type="button" class="test_button">
             test button
           </button>
+          <!-- END REMINDER TO REMOVE TEST BUTTON -->
         </div>
         <!-- end player action buttons -->
         <!-- player hand -->
