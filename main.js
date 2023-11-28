@@ -1,4 +1,3 @@
-// import game_start from "./modules/test.js";
 /* -----game start winodow----- */
 function start_Window() {
   document.getElementById("start_window").style.opacity = 1;
@@ -25,6 +24,7 @@ const player = {
   power: 1,
   health: 10,
   defense: 0,
+  conditions: [],
   actions: 3,
   deck: [],
   hand: [],
@@ -43,6 +43,7 @@ const enemy = {
     name: "minion",
     power: 1,
     health: 10,
+    conditions: [],
     image: "./minion.png",
   },
   elite: {
@@ -50,6 +51,7 @@ const enemy = {
     name: "elite",
     power: 2,
     health: 20,
+    conditions: [],
     image: "./elite.png",
   },
   boss: {
@@ -57,6 +59,7 @@ const enemy = {
     name: "boss",
     power: 3,
     health: 30,
+    conditions: [],
     image: "./boss.png",
   },
 };
@@ -203,6 +206,7 @@ function clear_encounter() {
   encounters.victory = false;
 }
 /* -----End clear encounter ------ */
+
 /* -----create starting deck -----*/
 function create_starting_deck() {
   let starting_deck = [];
@@ -213,6 +217,7 @@ function create_starting_deck() {
     let card = {};
     card["id"] = index + 1;
     card["name"] = list_of_elements[index];
+    card["type"] = list_of_elements[index];
     card["rarity"] = "common";
     card["power"] = 1;
     card["defense"] = 1;
@@ -377,7 +382,9 @@ function play_card(name, id) {
         let target_health = damage(
           "health_stat_text",
           encounters.active[0]["health"],
-          card_power
+          card_power,
+          card_played[0]["type"],
+          encounters.active[0]
         );
         encounters.active[0]["health"] = target_health;
       } else if (card_type == "Defense") {
@@ -406,9 +413,35 @@ function play_card(name, id) {
   }
 }
 /* ------END play card------- */
+/* ----test conditions application------ */
+function condition_check(element, target) {
+  let all_conditions = target.conditions;
+  let additional_damage = 0;
+  if (all_conditions.length > 0) {
+    for (let i = 0; i < all_conditions.length; i++) {
+      if (element == target.conditions[i].type) {
+        additional_damage += target.conditions[i].stack;
+        target.conditions[i].stack += 1;
+      }
+    }
+  } else {
+    create_image("./burn.png", "stat_icon", "enemy_burn", "enemy_conditions");
+    let burn = {
+      type: "Fire",
+      name: "burn",
+      stack: 1,
+    };
+    target.conditions.push(burn);
+    document.getElementById("enemy_burn_text").innerText =
+      ": " + target.conditions[0].stack;
+  }
+  return additional_damage;
+}
+/* ----End test conditions application------ */
 /* ------damage to enemy ------ */
-function damage(target_id, target_health, amount) {
+function damage(target_id, target_health, amount, element, target) {
   let damage = amount;
+  damage += condition_check(element, target);
   let remaining_health = target_health - damage;
   target_health = remaining_health;
   document.getElementById(target_id).innerText = ": " + target_health;
@@ -417,7 +450,7 @@ function damage(target_id, target_health, amount) {
 }
 /* ------End damage to enemy ------ */
 /* -----player defense ----- */
-function defense(target, amount) {
+function defense(amount) {
   player.defense += amount;
   let clear_player_defense = document.getElementById("player_defense");
   if (player.defense < 0) {
@@ -486,7 +519,6 @@ function turns() {
     action_points(3);
     console.log("turns: start player turn");
   }
-  return;
 }
 /* -----End Turn start alert ----- */
 /* ------enemy turn ------ */
@@ -516,7 +548,6 @@ function enemy_turn() {
   }
   combat.enemy_turns++;
   turns();
-  return;
 }
 /* ------End enemy turn ------ */
 /* ------Rewards ------ */
