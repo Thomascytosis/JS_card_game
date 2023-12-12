@@ -1,6 +1,8 @@
 # JS_card_game
 
-A game inspired by Across the Obelisk, Slay the Spire, and other roguelite card games.
+- A web-browser card game using Javascript without using Canvas (that's for later).
+- Inspired by Across the Obelisk, Slay the Spire, and other roguelite card games.
+- I am a novice so I am using this to practice.
 
 # Early stages of prototyping
 
