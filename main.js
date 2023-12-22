@@ -39,53 +39,69 @@ const encounters = {
   victory: false,
   skip: true,
 };
-const enemy = {
-  minion: {
-    type: "minion",
-    name: "minion",
-    power: 1,
-    health: 10,
-    health_current: 10,
-    conditions: [],
-    image: "./minion.png",
-  },
-  elite: {
-    type: "elite",
-    name: "elite",
-    power: 2,
-    health: 20,
-    health_current: 20,
-    conditions: [],
-    image: "./elite.png",
-  },
-  boss: {
-    type: "boss",
-    name: "boss",
-    power: 3,
-    health: 30,
-    health_current: 30,
-    conditions: [],
-    image: "./boss.png",
-  },
-};
 const combat = {
   player_turns: 0,
   enemy_turns: 0,
 };
 /* -----End global constants----- */
+/* -----create enemy----- */
+function create_enemy(type) {
+  let enemy = {};
+  switch (type) {
+    case "minion":
+      enemy = {
+        type: "minion",
+        name: "minion",
+        power: 1,
+        health: 10,
+        health_current: 10,
+        conditions: [],
+        image: "./minion.png",
+      };
+      break;
+    case "elite":
+      enemy = {
+        type: "elite",
+        name: "elite",
+        power: 2,
+        health: 20,
+        health_current: 20,
+        conditions: [],
+        image: "./elite.png",
+      };
+      break;
+    case "boss":
+      enemy = {
+        type: "boss",
+        name: "boss",
+        power: 3,
+        health: 30,
+        health_current: 30,
+        conditions: [],
+        image: "./boss.png",
+      };
+      break;
+  }
+  return enemy;
+}
+/* -----End create enemy----- */
 /* -----create encounter deck ----- */
 function create_encounter_deck() {
   let list = [0, 0, 3, 1, 0, 0, 3, 1, 0, 0, 3, 2];
   let new_encounter = [];
+  let enemy;
   for (let i = 0; i < list.length; i++) {
     let type_index = list[i];
     let new_encounter_type = encounters.type[type_index];
     if (new_encounter_type == "minion") {
-      new_encounter.push(enemy[new_encounter_type]);
+      enemy = create_enemy("minion");
+      new_encounter.push(enemy);
     } else if (new_encounter_type == "elite") {
-      new_encounter.push(enemy[new_encounter_type]);
+      enemy = create_enemy("elite");
+      new_encounter.push(enemy);
     } else if (new_encounter_type == "boss") {
-      new_encounter.push(enemy[new_encounter_type]);
+      enemy = create_enemy("boss");
+      new_encounter.push(enemy);
     } else {
       new_encounter.push({ type: "event", name: new_encounter_type });
     }
@@ -218,6 +234,7 @@ function create_starting_deck() {
   for (let index = 0; index < list_of_elements.length; index++) {
     let element_name = list_of_elements[index];
     let card = element_cards[element_name];
+    let rand_id = Math.random();
     for (var key in card) {
       if (card[key] == undefined) {
         let trash = [];
@@ -226,10 +243,18 @@ function create_starting_deck() {
         card = false;
       }
     }
+    /*!!!----- trying to figure out setting random ids for each card created-----!!! */
     if (card) {
-      starting_deck.push(card);
-      starting_deck.push(card);
-      starting_deck.push(card);
+      for (let i = 0; i < 3; i++) {
+        let rand = rand_id + i;
+        if (card.id !== rand) {
+          card.id = rand;
+          starting_deck.push(card);
+        } else {
+          card.id = rand_id;
+          starting_deck.push(card);
+        }
+      }
     }
   }
   shuffleArray(starting_deck);
@@ -780,10 +805,12 @@ function test() {
   console.log("!!-----Test-----!!");
   // end_turn();
   // add_card_reward(0, 3);
-  // console.log(player.deck);
+  console.log(player.deck);
   // console.log(player.hand);
   // console.log(player.discard);
-  console.log(encounters.active[0].conditions);
+  // console.log(encounters.active);
+  // console.log(encounters.active[0]);
+  // console.log(encounters.deck);
   return;
 }
 /* ------ End TEST ------ */
