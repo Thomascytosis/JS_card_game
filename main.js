@@ -234,7 +234,7 @@ function create_starting_deck() {
   for (let index = 0; index < list_of_elements.length; index++) {
     let element_name = list_of_elements[index];
     let card = element_cards[element_name];
-    let rand_id = Math.random();
+
     for (var key in card) {
       if (card[key] == undefined) {
         let trash = [];
@@ -243,17 +243,12 @@ function create_starting_deck() {
         card = false;
       }
     }
-    /*!!!----- trying to figure out setting random ids for each card created-----!!! */
     if (card) {
+      let new_id = Math.random();
       for (let i = 0; i < 3; i++) {
-        let rand = rand_id + i;
-        if (card.id !== rand) {
-          card.id = rand;
-          starting_deck.push(card);
-        } else {
-          card.id = rand_id;
-          starting_deck.push(card);
-        }
+        let new_card = Object.assign({}, card);
+        new_card.id = new_id + i;
+        starting_deck.push(new_card);
       }
     }
   }
