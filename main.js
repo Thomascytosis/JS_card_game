@@ -1,25 +1,33 @@
 import element_cards from "./cards.js";
 // console.log(element_cards);
+// let body = document.getElementsByTagName("body");
+// body[0].style.opacity = 1;
 /* -----game start winodow----- */
-function start_Window() {
-  document.getElementById("start_window").style.opacity = 1;
-}
-start_Window();
-
-const game_start = () => {
-  document.getElementById("start_window").style.opacity = 0;
-  setTimeout(() => {
-    document
-      .getElementById("start_window_container")
-      .setAttribute("hidden", "true");
-    document.getElementById("gameplay_area").removeAttribute("hidden");
-  }, 4000);
-  setTimeout(() => {
-    document.getElementById("gameplay_area").style.opacity = 1;
-  }, 5000);
-};
-let start_btn = document.getElementById("start_button");
-start_btn.onclick = game_start;
+// function start_Window() {
+//   document.getElementById("start_window").style.opacity = 1;
+// }
+// start_Window();
+/*expanding window------
+let expander = document.getElementById("expand_window");
+expander.addEventListener("click", () => {
+  expander.classList.toggle("expand");
+  let clickDisable = document.getElementsByClassName("click-disable");
+  clickDisable[0].classList.toggle("blocker");
+});*/
+// const game_start = () => {
+//   document.getElementById("start_window").style.opacity = 0;
+//   setTimeout(() => {
+//     document
+//       .getElementById("start_window_container")
+//       .setAttribute("hidden", "true");
+//     document.getElementById("gameplay_area").removeAttribute("hidden");
+//   }, 3000);
+//   setTimeout(() => {
+//     document.getElementById("gameplay_area").style.opacity = 1;
+//   }, 3000);
+// };
+// let start_btn = document.getElementById("start_button");
+// start_btn.onclick = game_start;
 /* -----End game start window ----- */
 /* -----global constants----- */
 const player = {
